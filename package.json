@@ -1,0 +1,16 @@
+{
+  "name": "bpbot_telegram",
+  "version": "1.0.0",
+  "description": "BP storage and charting",
+  "author": "Carmelo Velardo",
+  "scripts": {
+    "start": "nohup nodejs server.js &"
+  },
+  "dependencies": {
+    "express": "*",
+    "mongodb": "*",
+    "plotly": "^1.0.6",
+    "pdfast": "0.2.0",
+    "telegraf": "^3.14.0"
+  }
+}
