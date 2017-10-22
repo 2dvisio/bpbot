@@ -1,0 +1,7 @@
+{
+"TOKEN": "Fill this with your ID:TOKEN provided by Telegram's Botfather",
+"plotly": {
+   "username": "Fill this with plotly username", 
+   "token": "Fill this with plotly token"
+   }
+}
