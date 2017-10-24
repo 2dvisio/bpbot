@@ -8,7 +8,8 @@ var fs = require('fs');
 
 const app = new Telegraf(env.TOKEN)
 
-app.hears(/^hi$/i, (ctx) => ctx.reply('Hey there!'))
+
+//////// UTILITY FUNCTIONS
 
 function storeBP(_id, _datetime, _sys, _dist) {
         MongoClient.connect('mongodb://localhost/bp', function (err, db) {
@@ -26,13 +27,43 @@ function storeBP(_id, _datetime, _sys, _dist) {
 
 
 function validBP(sys, dist) {
-  
+
   if (sys < 50 || sys > 300 || dist < 20 || dist > 150) {
     return false
   }
 
   return true
 }
+
+
+
+function getBPs(id, success, failure) {
+
+   MongoClient.connect('mongodb://localhost/bp', function (err, db) {
+      if (err) {
+         failure()
+         return
+      }
+
+      db.collection("data").find({id: id}).toArray((err, res) => {
+
+      if (err) {
+         failure()
+         return
+      }
+
+      success(res)
+
+     db.close()
+     })
+   })
+
+}
+
+///// COMMANDS AND RESPONSES
+
+const hiEmojiArray = ['👏', '👌', '👋', '🙌', '✌️', '✋', '🖖', '🤗']
+app.hears(/^hi$/i, (ctx) => ctx.reply('Hey there! ' + hiEmojiArray[ (Date.now()/1000) % hiEmojiArray.length]))
 
 
 const getBP = /^bp [0-9.]+ [0-9.]+/i
@@ -64,29 +95,6 @@ app.hears(getBP, ctx => {
 
 })
 
-
-function getBPs(id, success, failure) {
-
-   MongoClient.connect('mongodb://localhost/bp', function (err, db) {
-      if (err) {
-         failure()
-         return
-      }
-
-      db.collection("data").find({id: id}).toArray((err, res) => {
-
-      if (err) {
-         failure()
-         return
-      }
-
-      success(res)
-
-     db.close()
-     })
-   })
-
-}
 
 
 app.command('/history', (ctx) => {
@@ -164,11 +172,16 @@ app.command('/graph', (ctx) => {
 
 
 app.command('start', (ctx) => {
-   ctx.reply('Hello. Thank you for joining. ☺️',
+   ctx.reply("Hello. Thank you for joining. ☺️\n"+
+   "You can send me new blood pressure readings directly as numbers.\n"+
+   "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
+   "120 60⏎\n\n"+
+   "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
+   "You can request these using the two buttons provided (/graph and /history).",
    Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
-app.on('sticker', (ctx) => ctx.reply('👍'))
+app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker 👍'))
+
 
 app.startPolling()
-
