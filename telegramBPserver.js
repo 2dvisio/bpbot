@@ -4,7 +4,7 @@ const env = require('./env.json')
 
 
 var plotly = require('plotly')(env.plotly.username, env.plotly.token)
-var fs = require('fs');
+var fs = require('fs')
 
 const app = new Telegraf(env.TOKEN)
 
@@ -35,15 +35,15 @@ function validBP(sys, dist) {
 }
 
 
-const getBP = /^bp [0-9.]+ [0-9.]+/i
+const getBP = /^[0-9.]+ [0-9.]+/i
 app.hears(getBP, ctx => {
 
   console.log(ctx.message)
 
   const tokens = ctx.message.text.split(/\s+/)
 
-  var sys = parseFloat(tokens[1])
-  var dist = parseFloat(tokens[2])
+  var sys = parseFloat(tokens[0])
+  var dist = parseFloat(tokens[1])
   var datetime = new Date(parseInt(ctx.message.date) * 1000)
   var id = ctx.message.from.id
 
