@@ -59,8 +59,8 @@ function getBPs(id, success, failure) {
 
 ///// COMMANDS AND RESPONSES
 
-const hiEmojiArray = ['👏', '👌', '👋', '🙌', '✌️', '✋', '🖖', '🤗']
-app.hears(/^hi$/i, (ctx) => ctx.reply('Hey there! ' + hiEmojiArray[ (Date.now()/1000) % hiEmojiArray.length]))
+const hiEmojiArray = ["👏", "👌", "👋", "🙌", "✌️", "✋", "🖖", "🤗"]
+app.hears(/^hi$/i, (ctx) => ctx.reply("Hey there! " + hiEmojiArray[parseInt((Date.now()/1000) % hiEmojiArray.length)] ))
 
 
 const getBP = /^[0-9.]+ [0-9.]+/i
