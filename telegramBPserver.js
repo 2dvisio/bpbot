@@ -178,7 +178,7 @@ app.command('start', (ctx) => {
    Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
-const seekHelp = /[help|\?]/i
+const seekHelp = /^\\[help|\?]/i
 
 app.command(seekHelp, (ctx) => {
    ctx.reply("Hello, here is some help:\n"+
