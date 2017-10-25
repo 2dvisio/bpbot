@@ -178,9 +178,9 @@ app.command('start', (ctx) => {
    Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
-const seekHelp = /^\\[help|\?]/i
+const seekHelp = /^[help|\?]/i
 
-app.command(seekHelp, (ctx) => {
+app.hears(seekHelp, (ctx) => {
    ctx.reply("Hello, here is some help:\n"+
    "You can send me new blood pressure readings directly as numbers.\n"+
    "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
