@@ -178,6 +178,20 @@ app.command('start', (ctx) => {
    Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
+const seekHelp = /[help|\?]/i
+
+app.command(seekHelp, (ctx) => {
+   ctx.reply("Hello, here is some help:\n"+
+   "You can send me new blood pressure readings directly as numbers.\n"+
+   "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
+   "120 60⏎\n\n"+
+   "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
+   "You can request these using the two buttons provided (/graph and /history).",
+   Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
+})
+
+
+
 app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker 👍'))
 
 
