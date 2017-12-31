@@ -9,8 +9,7 @@ var fs = require('fs')
 const app = new Telegraf(env.TOKEN)
 
 
-//////// UTILITY FUNCTIONS
-
+// UTILITY FUNCTIONS
 function storeBP(_id, _datetime, _sys, _dist) {
         MongoClient.connect('mongodb://localhost/bp', function (err, db) {
 
@@ -35,7 +34,6 @@ function validBP(sys, dist) {
 }
 
 function getBPs(id, success, failure) {
-
    MongoClient.connect('mongodb://localhost/bp', function (err, db) {
       if (err) {
          failure()
@@ -57,13 +55,18 @@ function getBPs(id, success, failure) {
 
 }
 
-///// COMMANDS AND RESPONSES
+// COMMANDS AND RESPONSES
 
+// HI
 const hiEmojiArray = ["👏", "👌", "👋", "🙌", "✌️", "✋", "🖖", "🤗"]
 app.hears(/^hi$/i, (ctx) => ctx.reply("Hey there! " + hiEmojiArray[parseInt((Date.now()/1000) % hiEmojiArray.length)] ))
 
 
+
+// RULE BP ALONE (ASSUMES DATE AND TIME)
 const getBP = /^[0-9.]+ [0-9.]+/i
+
+// LISTEN BP
 app.hears(getBP, ctx => {
 
   console.log(ctx.message)
@@ -74,7 +77,6 @@ app.hears(getBP, ctx => {
   var dist = parseFloat(tokens[1])
   var datetime = new Date(parseInt(ctx.message.date) * 1000)
   var id = ctx.message.from.id
-
 
   if (sys < dist) {
     var temp = sys
@@ -94,6 +96,7 @@ app.hears(getBP, ctx => {
 
 
 
+// HISTORY
 app.command('/history', (ctx) => {
 
    getBPs(ctx.message.from.id,
@@ -114,6 +117,7 @@ app.command('/history', (ctx) => {
 })
 
 
+// GRAPH
 app.command('/graph', (ctx) => {
 
    getBPs(ctx.message.from.id,
@@ -167,7 +171,7 @@ app.command('/graph', (ctx) => {
 
 })
 
-
+// START COMMAND
 app.command('start', (ctx) => {
    ctx.reply("Hello. Thank you for joining. ☺️\n"+
    "You can send me new blood pressure readings directly as numbers.\n"+
@@ -178,8 +182,9 @@ app.command('start', (ctx) => {
    Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
-const seekHelp = /^[help|\?]/i
 
+// HELP COMMAND
+const seekHelp = /^[help|\?]/i
 app.hears(seekHelp, (ctx) => {
    ctx.reply("Hello, here is some help:\n"+
    "You can send me new blood pressure readings directly as numbers.\n"+
@@ -191,8 +196,8 @@ app.hears(seekHelp, (ctx) => {
 })
 
 
-
+// IN CASE OF STICKERS
 app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker 👍'))
 
-
+// STARTING THE APP
 app.startPolling()
