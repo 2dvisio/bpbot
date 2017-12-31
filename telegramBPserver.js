@@ -91,9 +91,69 @@ app.hears(getBP, ctx => {
   } else {
     ctx.reply('It seems like you have entered an invalid BP reading. Try again.')
   }
-
 })
 
+
+// RULE BP WITH DATE
+const getBP_date = /^[0-9.]+ [0-9.]+ [0-9.]+\/[0-9.]+\/[0-9.]+/i
+
+// LISTEN BP WITH DATE
+app.hears(getBP_date, ctx => {
+
+  console.log(ctx.message)
+
+  const tokens = ctx.message.text.split(/\s+/)
+
+  var sys = parseFloat(tokens[0])
+  var dist = parseFloat(tokens[1])
+  var datetime = new Date(tokens[2])
+  var id = ctx.message.from.id
+
+  if (sys < dist) {
+    var temp = sys
+    sys = dist
+    dist = temp
+  }
+
+  if (validBP(sys, dist)) {
+    ctx.reply('Thank you for providing your BP readings')
+    ctx.reply('You have entered ' + sys + '/' + dist)
+    storeBP(id, datetime, sys, dist)
+  } else {
+    ctx.reply('It seems like you have entered an invalid BP reading. Try again.')
+  }
+})
+
+
+// RULE BP WITH DATE
+const getBP_date_time = /^[0-9.]+ [0-9.]+ [0-9.]+\/[0-9.]+\/[0-9.]+ [0-9.]+:+[0-9.]+/i
+
+// LISTEN BP WITH DATE
+app.hears(getBP_date_time, ctx => {
+
+  console.log(ctx.message)
+
+  const tokens = ctx.message.text.split(/\s+/)
+
+  var sys = parseFloat(tokens[0])
+  var dist = parseFloat(tokens[1])
+  var datetime = new Date(tokens[2] + " " + tokens[3])
+  var id = ctx.message.from.id
+
+  if (sys < dist) {
+    var temp = sys
+    sys = dist
+    dist = temp
+  }
+
+  if (validBP(sys, dist)) {
+    ctx.reply('Thank you for providing your BP readings')
+    ctx.reply('You have entered ' + sys + '/' + dist)
+    storeBP(id, datetime, sys, dist)
+  } else {
+    ctx.reply('It seems like you have entered an invalid BP reading. Try again.')
+  }
+})
 
 
 // HISTORY
