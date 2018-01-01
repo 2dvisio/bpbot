@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient
 const Telegraf = require('telegraf')
 const env = require('./env.json')
-const moment = require('moment-with-locales-es6')
+const moment = require('moment')
 
 var plotly = require('plotly')(env.plotly.username, env.plotly.token)
 var fs = require('fs')
