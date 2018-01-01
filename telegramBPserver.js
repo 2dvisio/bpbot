@@ -106,7 +106,7 @@ app.hears(getBP_date, ctx => {
 
   var sys = parseFloat(tokens[0])
   var dist = parseFloat(tokens[1])
-  var datetime = new Date(tokens[2])
+  var datetime = new Date(tokens[2].split("/").reverse().join("/"))
   var id = ctx.message.from.id
 
   if (sys < dist) {
@@ -137,7 +137,7 @@ app.hears(getBP_date_time, ctx => {
 
   var sys = parseFloat(tokens[0])
   var dist = parseFloat(tokens[1])
-  var datetime = new Date(tokens[2] + " " + tokens[3])
+  var datetime = new Date(tokens[2].split("/").reverse().join("/") + " " + tokens[3])
   var id = ctx.message.from.id
 
   if (sys < dist) {
