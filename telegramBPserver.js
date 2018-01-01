@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient
 const Telegraf = require('telegraf')
 const env = require('./env.json')
-
+const moment = require('moment')
 
 var plotly = require('plotly')(env.plotly.username, env.plotly.token)
 var fs = require('fs')
@@ -106,7 +106,7 @@ app.hears(getBP_date, ctx => {
 
   var sys = parseFloat(tokens[0])
   var dist = parseFloat(tokens[1])
-  var datetime = new Date(tokens[2].split("/").reverse().join("/"))
+  var datetime = moment(tokens[2].split("/").reverse().join("-"))
   var id = ctx.message.from.id
 
   if (sys < dist) {
@@ -137,7 +137,7 @@ app.hears(getBP_date_time, ctx => {
 
   var sys = parseFloat(tokens[0])
   var dist = parseFloat(tokens[1])
-  var datetime = new Date(tokens[2].split("/").reverse().join("/") + " " + tokens[3])
+  var datetime = moment(tokens[2].split("/").reverse().join("-") + " " + tokens[3])
   var id = ctx.message.from.id
 
   if (sys < dist) {
