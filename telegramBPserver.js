@@ -161,7 +161,7 @@ app.command('/history', (ctx) => {
 
    getBPs(ctx.message.from.id,
    (res)=>{
-      const strings = res.map((e) => moment(e.datetime).locale(ctx.message.from.language_code).format('LLL') + " " + e.sys + "/" + e.dist)
+      const strings = res.map((e) => e.datetime.toLocaleString('en-GB') + " " + e.sys + "/" + e.dist)
 
       if (typeof(strings) == 'Object') {
          ctx.reply(strings)
