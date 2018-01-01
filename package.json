@@ -11,6 +11,7 @@
     "mongodb": "*",
     "plotly": "^1.0.6",
     "pdfast": "0.2.0",
+    "moment": "2.20.1",
     "telegraf": "^3.14.0"
   }
 }
