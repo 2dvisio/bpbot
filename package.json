@@ -4,7 +4,7 @@
   "description": "BP storage and charting",
   "author": "Carmelo Velardo",
   "scripts": {
-    "start": "nohup nodejs server.js &"
+    "start": "nohup nodejs telegramBPserver.js &"
   },
   "dependencies": {
     "express": "*",
