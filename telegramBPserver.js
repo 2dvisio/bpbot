@@ -35,6 +35,7 @@ function validBP(sys, dist) {
   return true
 }
 
+// Always return in ascending order
 function getBPs(id, success, failure) {
    MongoClient.connect('mongodb://localhost/bp', function (err, db) {
       if (err) {
@@ -42,7 +43,7 @@ function getBPs(id, success, failure) {
          return
       }
 
-      db.collection("data").find({id: id}).toArray((err, res) => {
+      db.collection("data").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
 
       if (err) {
          failure()
