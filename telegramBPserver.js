@@ -240,13 +240,50 @@ app.hears(getBP_date_time, ctx => {
 
 
 // RULE HR ALONE (ASSUMES DATE AND TIME)
-const getHR = /^[0-9]+$/i
+const getHR = /^hr [0-9]+$/i
 
+// LISTEN HR
+app.hears(getHR, ctx => {
+
+  console.log(ctx.message)
+
+  const tokens = ctx.message.text.split(/\s+/)
+
+  var hr = parseFloat(tokens[1])
+  var datetime = new Date(parseInt(ctx.message.date) * 1000)
+  var id = ctx.message.from.id
+
+  if (validHR(hr)) {
+    ctx.reply('Thank you for providing your HR')
+    ctx.reply('You have entered ' + hr)
+    storeHR(id, datetime, hr)
+  } else {
+    ctx.reply('It seems like you have entered an invalid HR reading. Try again.')
+  }
+})
 
 
 // RULE SPO2 ALONE (ASSUMES DATE AND TIME)
-const getSPO2 = /^[0-9]+$/i
+const getSPO2 = /^ox [0-9]+$/i
+// LISTEN SPO2
+app.hears(getSPO2, ctx => {
 
+  console.log(ctx.message)
+
+  const tokens = ctx.message.text.split(/\s+/)
+
+  var spo2 = parseFloat(tokens[1])
+  var datetime = new Date(parseInt(ctx.message.date) * 1000)
+  var id = ctx.message.from.id
+
+  if (validSPO2(spo2)) {
+    ctx.reply('Thank you for providing your SPO2')
+    ctx.reply('You have entered ' + spo2)
+    storeSPO2(id, datetime, spo2)
+  } else {
+    ctx.reply('It seems like you have entered an invalid SPO2 reading. Try again.')
+  }
+})
 
 
 
