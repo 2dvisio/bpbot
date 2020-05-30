@@ -375,7 +375,7 @@ app.command('start', (ctx) => {
 
 
 // HELP COMMAND
-const seekHelp = /^[help|\?]/i
+const seekHelp = '/help'
 app.hears(seekHelp, (ctx) => {
   ctx.reply("Hello, here is some help:\n"+
   "You can send me new blood pressure readings directly as numbers.\n"+
