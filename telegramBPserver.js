@@ -33,6 +33,37 @@ function storeBP(_id, _datetime, _sys, _dist) {
   })
 }
 
+function storeHR(_id, _datetime, _hr) {
+
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db(__dbname)
+
+    if (db) {
+        db.collection("hr").insertOne({
+        id: _id,
+        datetime: _datetime,
+        hr: _hr
+      })
+    }
+  })
+}
+
+function storeSPO2(_id, _datetime, _SPO2) {
+
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db(__dbname)
+
+    if (db) {
+        db.collection("spo2").insertOne({
+        id: _id,
+        datetime: _datetime,
+        spo2: _SPO2
+      })
+    }
+  })
+}
+
+
 function validBP(sys, dist) {
 
   if (sys < 50 || sys > 300 || dist < 20 || dist > 150) {
@@ -41,6 +72,26 @@ function validBP(sys, dist) {
 
   return true
 }
+
+function validHR(hr) {
+
+  if (hr < 10 || hr > 300) {
+    return false
+  }
+
+  return true
+}
+
+function validSPO2(spo2) {
+
+  if (spo2 < 65 || spo2 > 100) {
+    return false
+  }
+
+  return true
+}
+
+
 
 // Always return in ascending order
 function getBPs(id, success, failure) {
@@ -59,6 +110,37 @@ function getBPs(id, success, failure) {
     })
   })
 }
+
+
+// Always return in ascending order
+function getHRs(id, success, failure) {
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db(__dbname)
+    db.collection("hr").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
+      if (err) {
+        failure()
+        return
+      }
+     success(res)
+    })
+  })
+}
+
+
+// Always return in ascending order
+function getSPO2s(id, success, failure) {
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db(__dbname)
+    db.collection("spo2").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
+      if (err) {
+        failure()
+        return
+      }
+      success(res)
+    })
+  })
+}
+
 
 // COMMANDS AND RESPONSES
 
@@ -158,6 +240,18 @@ app.hears(getBP_date_time, ctx => {
     ctx.reply('It seems like you have entered an invalid BP reading. Try again.')
   }
 })
+
+
+// RULE BP ALONE (ASSUMES DATE AND TIME)
+const getHR = /^[0-9]+$/i
+
+
+
+
+
+
+
+
 
 
 // HISTORY
