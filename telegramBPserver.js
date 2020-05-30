@@ -68,7 +68,7 @@ app.hears(/^hi$/i, (ctx) => ctx.reply("Hey there! " + hiEmojiArray[parseInt((Dat
 
 
 // RULE BP ALONE (ASSUMES DATE AND TIME)
-const getBP = /^[0-9.]+ [0-9.]+$/i
+const getBP = /^[0-9]+ [0-9]+$/i
 
 // LISTEN BP
 app.hears(getBP, ctx => {
@@ -99,7 +99,7 @@ app.hears(getBP, ctx => {
 
 
 // RULE BP WITH DATE
-const getBP_date = /^[0-9.]+ [0-9.]+ [0-9.]+\/[0-9.]+\/[0-9.]+$/i
+const getBP_date = /^[0-9]+ [0-9]+ [0-9]+\/[0-9]+\/[0-9]+$/i
 
 // LISTEN BP WITH DATE
 app.hears(getBP_date, ctx => {
@@ -130,7 +130,7 @@ app.hears(getBP_date, ctx => {
 
 
 // RULE BP WITH DATE
-const getBP_date_time = /^[0-9.]+ [0-9.]+ [0-9.]+\/[0-9.]+\/[0-9.]+ [0-9.]+:+[0-9.]+$/i
+const getBP_date_time = /^[0-9]+ [0-9]+ [0-9]+\/[0-9]+\/[0-9]+ [0-9]+:+[0-9]+$/i
 
 // LISTEN BP WITH DATE
 app.hears(getBP_date_time, ctx => {
