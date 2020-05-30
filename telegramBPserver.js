@@ -5,11 +5,12 @@ const moment = require('moment')
 
 require("moment/min/locales.min")
 
+//Name of the database
+const __dbname = 'bp'
 
 var plotly = require('plotly')(env.plotly)
-
-
 var fs = require('fs')
+
 
 const app = new Telegraf(env.TOKEN)
 
@@ -18,9 +19,8 @@ const clientmongo = new MongoClient(url)
 
 // UTILITY FUNCTIONS
 function storeBP(_id, _datetime, _sys, _dist) {
-
   clientmongo.connect(function(err) {
-    const db = clientmongo.db('bp')
+    const db = clientmongo.db(__dbname)
 
     if (db) {
         db.collection("data").insertOne({
@@ -45,7 +45,7 @@ function validBP(sys, dist) {
 // Always return in ascending order
 function getBPs(id, success, failure) {
   clientmongo.connect(function(err) {
-    const db = clientmongo.db('bp')
+    const db = clientmongo.db(__dbname)
 
     db.collection("data").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
       if (err) {
