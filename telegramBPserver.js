@@ -18,6 +18,7 @@ const url='mongodb://localhost:27017'
 const clientmongo = new MongoClient(url)
 
 // UTILITY FUNCTIONS
+//
 function storeBP(_id, _datetime, _sys, _dist) {
   clientmongo.connect(function(err) {
     const db = clientmongo.db(__dbname)
@@ -33,8 +34,8 @@ function storeBP(_id, _datetime, _sys, _dist) {
   })
 }
 
-function storeHR(_id, _datetime, _hr) {
 
+function storeHR(_id, _datetime, _hr) {
   clientmongo.connect(function(err) {
     const db = clientmongo.db(__dbname)
 
@@ -48,8 +49,8 @@ function storeHR(_id, _datetime, _hr) {
   })
 }
 
-function storeSPO2(_id, _datetime, _SPO2) {
 
+function storeSPO2(_id, _datetime, _SPO2) {
   clientmongo.connect(function(err) {
     const db = clientmongo.db(__dbname)
 
@@ -65,7 +66,6 @@ function storeSPO2(_id, _datetime, _SPO2) {
 
 
 function validBP(sys, dist) {
-
   if (sys < 50 || sys > 300 || dist < 20 || dist > 150) {
     return false
   }
@@ -74,7 +74,6 @@ function validBP(sys, dist) {
 }
 
 function validHR(hr) {
-
   if (hr < 10 || hr > 300) {
     return false
   }
@@ -83,7 +82,6 @@ function validHR(hr) {
 }
 
 function validSPO2(spo2) {
-
   if (spo2 < 65 || spo2 > 100) {
     return false
   }
@@ -103,7 +101,6 @@ function getBPs(id, success, failure) {
         failure()
         return
       }
-
 
       success(res)
 
@@ -242,14 +239,13 @@ app.hears(getBP_date_time, ctx => {
 })
 
 
-// RULE BP ALONE (ASSUMES DATE AND TIME)
+// RULE HR ALONE (ASSUMES DATE AND TIME)
 const getHR = /^[0-9]+$/i
 
 
 
-
-
-
+// RULE SPO2 ALONE (ASSUMES DATE AND TIME)
+const getSPO2 = /^[0-9]+$/i
 
 
 
@@ -353,12 +349,8 @@ app.hears(seekHelp, (ctx) => {
   Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
-
-
 // IN CASE OF STICKERS
-app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker 👍'))
-
-
+app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker ' + hiEmojiArray[parseInt((Date.now()/1000) % hiEmojiArray.length)] ))
 
 // STARTING THE APP
 app.startPolling()
