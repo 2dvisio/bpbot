@@ -2,28 +2,35 @@ const MongoClient = require('mongodb').MongoClient
 const Telegraf = require('telegraf')
 const env = require('./env.json')
 const moment = require('moment')
+
 require("moment/min/locales.min")
 
 
-var plotly = require('plotly')(env.plotly.username, env.plotly.token)
+var plotly = require('plotly')(env.plotly)
+
+
 var fs = require('fs')
 
 const app = new Telegraf(env.TOKEN)
 
+const url='mongodb://localhost:27017'
+const clientmongo = new MongoClient(url)
 
 // UTILITY FUNCTIONS
 function storeBP(_id, _datetime, _sys, _dist) {
-        MongoClient.connect('mongodb://localhost/bp', function (err, db) {
 
-                if (err) throw err
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db('bp')
 
-                db.collection("data").insertOne({
-			id: _id,
-			datetime: _datetime,
-			sys: _sys,
-			dist: _dist
-		})
-        })
+    if (db) {
+        db.collection("data").insertOne({
+        id: _id,
+        datetime: _datetime,
+        sys: _sys,
+        dist: _dist
+      })
+    }
+  })
 }
 
 function validBP(sys, dist) {
@@ -37,25 +44,20 @@ function validBP(sys, dist) {
 
 // Always return in ascending order
 function getBPs(id, success, failure) {
-   MongoClient.connect('mongodb://localhost/bp', function (err, db) {
+  clientmongo.connect(function(err) {
+    const db = clientmongo.db('bp')
+
+    db.collection("data").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
       if (err) {
-         failure()
-         return
+        failure()
+        return
       }
 
-      db.collection("data").find({id: id}).sort( { datetime: 1 } ).toArray((err, res) => {
-
-      if (err) {
-         failure()
-         return
-      }
 
       success(res)
 
-     db.close()
-     })
-   })
-
+    })
+  })
 }
 
 // COMMANDS AND RESPONSES
@@ -63,7 +65,6 @@ function getBPs(id, success, failure) {
 // HI
 const hiEmojiArray = ["👏", "👌", "👋", "🙌", "✌️", "✋", "🖖", "🤗"]
 app.hears(/^hi$/i, (ctx) => ctx.reply("Hey there! " + hiEmojiArray[parseInt((Date.now()/1000) % hiEmojiArray.length)] ))
-
 
 
 // RULE BP ALONE (ASSUMES DATE AND TIME)
@@ -162,33 +163,32 @@ app.hears(getBP_date_time, ctx => {
 // HISTORY
 app.command('/history', (ctx) => {
 
-   getBPs(ctx.message.from.id,
-   (res)=>{
+  getBPs(ctx.message.from.id,
+  (res)=>{
       const strings = res.map((e) => moment(e.datetime).locale(ctx.message.from.language_code).format('LLL') + " " + e.sys + "/" + e.dist)
 
       if (typeof(strings) == 'Object') {
-         ctx.reply(strings)
+        ctx.reply(strings)
       } else {
-         console.log(strings)
-         const stringList = strings.join("\n")
-         ctx.reply(stringList)
+        console.log(strings)
+        const stringList = strings.join("\n")
+        ctx.reply(stringList)
       }
-   },
-   () => {
+  },
+  () => {
       console.log("Error occurred")
-   })
+  })
 })
 
 
 // GRAPH
 app.command('/graph', (ctx) => {
 
-   getBPs(ctx.message.from.id,
-   (res)=>{
+  getBPs(ctx.message.from.id,
+  (res)=>{
       const x = res.map((e) => e.datetime)
       const sys = res.map((e) => e.sys)
       const dist = res.map((e) => e.dist)
-
 
       var trace1 = {
           x: x,
@@ -205,9 +205,9 @@ app.command('/graph', (ctx) => {
       }
 
       var layout = {
-         title: "Blood pressure values",
-         xaxis: {title: "Date"},
-         yaxis: {title: "BP [mmHg]"}
+        title: "Blood pressure values",
+        xaxis: {title: "Date"},
+        yaxis: {title: "BP [mmHg]"}
       }
 
       var figure = { data: [trace1, trace2], layout: layout }
@@ -218,49 +218,53 @@ app.command('/graph', (ctx) => {
           height: 500
       }
 
-     plotly.getImage(figure, imgOpts, function (error, imageStream) {
-        if (error) return console.log (error)
+      console.log(x.length)
+
+    plotly.getImage(figure, imgOpts, function (error, imageStream) {
+        if (error) return console.log ("An Error Occurred: " + error)
         const nameImg = ctx.message.from.id + "-" + Date.now() + ".png"
 
         ctx.replyWithPhoto({source: imageStream})
 
-     })
+    })
 
-   },
-   () => {
+  },
+  () => {
       console.log("Error occurred")
-   })
-
-
+  })
 })
+
 
 // START COMMAND
 app.command('start', (ctx) => {
-   ctx.reply("Hello. Thank you for joining. ☺️\n"+
-   "You can send me new blood pressure readings directly as numbers.\n"+
-   "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
-   "120 60⏎\n\n"+
-   "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
-   "You can request these using the two buttons provided (/graph and /history).",
-   Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
+  ctx.reply("Hello. Thank you for joining. ☺️\n"+
+  "You can send me new blood pressure readings directly as numbers.\n"+
+  "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
+  "120 60⏎\n\n"+
+  "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
+  "You can request these using the two buttons provided (/graph and /history).",
+  Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
 
 
 // HELP COMMAND
 const seekHelp = /^[help|\?]/i
 app.hears(seekHelp, (ctx) => {
-   ctx.reply("Hello, here is some help:\n"+
-   "You can send me new blood pressure readings directly as numbers.\n"+
-   "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
-   "120 60⏎\n\n"+
-   "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
-   "You can request these using the two buttons provided (/graph and /history).",
-   Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
+  ctx.reply("Hello, here is some help:\n"+
+  "You can send me new blood pressure readings directly as numbers.\n"+
+  "For example, if you need to send 120 Systolic and 60 Diastolic, you can send:\n"+
+  "120 60⏎\n\n"+
+  "I will store that for you and eventually provide you with the history of your values as graph or list.\n"+
+  "You can request these using the two buttons provided (/graph and /history).",
+  Telegraf.Extra.markup((markup) => {return markup.keyboard(['/graph', '/history'])}))
 })
+
 
 
 // IN CASE OF STICKERS
 app.on('sticker', (ctx) => ctx.reply('Thank you for the sticker 👍'))
+
+
 
 // STARTING THE APP
 app.startPolling()
