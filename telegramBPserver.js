@@ -288,7 +288,48 @@ app.hears(getSPO2, ctx => {
 
 
 // HISTORY
-app.command('/history', (ctx) => {
+app.hears('/history hr', (ctx) => {
+  getHRs(ctx.message.from.id,
+  (res)=>{
+      const strings = res.map((e) => moment(e.datetime).locale(ctx.message.from.language_code).format('LLL') + " " + e.hr)
+
+      if (typeof(strings) == 'Object') {
+        ctx.reply(strings)
+      } else {
+        console.log(strings)
+        const stringList = strings.join("\n")
+        ctx.reply(stringList)
+      }
+  },
+  () => {
+      console.log("Error occurred")
+  })
+})
+
+
+// HISTORY
+app.hears('/history ox', (ctx) => {
+  getSPO2s(ctx.message.from.id,
+  (res)=>{
+      const strings = res.map((e) => moment(e.datetime).locale(ctx.message.from.language_code).format('LLL') + " " + e.spo2)
+
+      if (typeof(strings) == 'Object') {
+        ctx.reply(strings)
+      } else {
+        console.log(strings)
+        const stringList = strings.join("\n")
+        ctx.reply(stringList)
+      }
+  },
+  () => {
+      console.log("Error occurred")
+  })
+})
+
+
+
+// HISTORY
+app.hears('/history bp', (ctx) => {
 
   getBPs(ctx.message.from.id,
   (res)=>{
@@ -308,8 +349,25 @@ app.command('/history', (ctx) => {
 })
 
 
+// HISTORY
+app.hears('/history', (ctx) => {
+
+  ctx.reply('Please specify what vital with hr, bp, or ox')
+  
+})
+
+
+// HISTORY
+app.hears('/graph', (ctx) => {
+
+  ctx.reply('Please specify what vital with hr, bp, or ox')
+  
+})
+
+
+
 // GRAPH
-app.command('/graph', (ctx) => {
+app.hears('/graph bp', (ctx) => {
 
   getBPs(ctx.message.from.id,
   (res)=>{
@@ -338,6 +396,105 @@ app.command('/graph', (ctx) => {
       }
 
       var figure = { data: [trace1, trace2], layout: layout }
+
+      var imgOpts = {
+          format: 'png',
+          width: 1000,
+          height: 500
+      }
+
+      console.log(x.length)
+
+    plotly.getImage(figure, imgOpts, function (error, imageStream) {
+        if (error) return console.log ("An Error Occurred: " + error)
+        const nameImg = ctx.message.from.id + "-" + Date.now() + ".png"
+
+        ctx.replyWithPhoto({source: imageStream})
+
+    })
+
+  },
+  () => {
+      console.log("Error occurred")
+  })
+})
+
+
+
+
+// GRAPH
+app.hears('/graph ox', (ctx) => {
+
+  getSPO2s(ctx.message.from.id,
+  (res)=>{
+      const x = res.map((e) => e.datetime)
+      const spo2 = res.map((e) => e.spo2)
+
+      var trace1 = {
+          x: x,
+          y: spo2,
+          type: "scatter",
+          name: "Oxygen saturation"
+      }
+
+
+      var layout = {
+        title: "Oxygen saturation values",
+        xaxis: {title: "Date"},
+        yaxis: {title: "Oxygen saturation [SpO2 %]"}
+      }
+
+      var figure = { data: [trace1], layout: layout }
+
+      var imgOpts = {
+          format: 'png',
+          width: 1000,
+          height: 500
+      }
+
+      console.log(x.length)
+
+    plotly.getImage(figure, imgOpts, function (error, imageStream) {
+        if (error) return console.log ("An Error Occurred: " + error)
+        const nameImg = ctx.message.from.id + "-" + Date.now() + ".png"
+
+        ctx.replyWithPhoto({source: imageStream})
+
+    })
+
+  },
+  () => {
+      console.log("Error occurred")
+  })
+})
+
+
+
+
+// GRAPH
+app.hears('/graph hr', (ctx) => {
+
+  getHRs(ctx.message.from.id,
+  (res)=>{
+      const x = res.map((e) => e.datetime)
+      const hr = res.map((e) => e.hr)
+      
+
+      var trace1 = {
+          x: x,
+          y: hr,
+          type: "scatter",
+          name: "Heart rate"
+      }
+
+
+      var layout = {
+        title: "Heart rate values",
+        xaxis: {title: "Date"},
+        yaxis: {title: "HR [bpm]"}
+      }
+
+      var figure = { data: [trace1], layout: layout }
 
       var imgOpts = {
           format: 'png',
